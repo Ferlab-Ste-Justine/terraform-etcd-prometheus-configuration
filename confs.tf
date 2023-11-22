@@ -22,12 +22,25 @@ resource "local_file" "terracd_confs" {
   filename        = "${var.fs_path}/rules/${each.value.tag}-terracd.yml"
 }
 
+resource "local_file" "kubernetes_confs" {
+  for_each        = { for kubernetes_cluster_job in var.kubernetes_cluster_jobs : kubernetes_cluster_job.tag => kubernetes_cluster_job }
+  content         = templatefile(
+    "${path.module}/templates/kubernetes.yml.tpl",
+    {
+      cluster = each.value
+    }
+  )
+  file_permission = "0600"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-kubernetes.yml"
+}
+
 locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
     contains(keys(local.parsed_config), "rule_files") ? local.parsed_config.rule_files : [],
     [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.tag}-node-exporter.yml"],
-    [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"]
+    [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"],
+    [for kubernetes_cluster_job in var.kubernetes_cluster_jobs: "rules/${kubernetes_cluster_job.tag}-kubernetes.yml"]
   )
 }
 
