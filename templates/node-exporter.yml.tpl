@@ -57,7 +57,7 @@ groups:
       - record: ${replace(job.tag, "-", "_")}:filesystem_space_usage_ratio:percentage
         expr: (1 - node_filesystem_avail_bytes{job="${job.tag}-node-exporter", fstype="ext4"} / node_filesystem_size_bytes{job="${job.tag}-node-exporter", fstype="ext4"}) * 100
       - record: ${replace(job.tag, "-", "_")}:disks_io_usage:percentage
-        expr: rate(node_disk_io_time_seconds_total{job="${job.tag}-node-exporter", device=~"vd."}[5m]) * 100
+        expr: rate(node_disk_io_time_seconds_total{job="${job.tag}-node-exporter", device=~"vd.|sd."}[5m]) * 100
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}DiskSpaceUsageHigh
         expr: ${replace(job.tag, "-", "_")}:filesystem_space_usage_ratio:percentage > ${job.disk_space_usage_threshold}
 %{ if length(job.alert_labels) > 0 ~}
