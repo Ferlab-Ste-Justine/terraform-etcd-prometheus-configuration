@@ -23,6 +23,7 @@ Currently, the two kinds of boilerplate that are supported:
   - **expected_count**: Expected number of instances associated with the job
   - **memory_usage_threshold**: Maximum memory usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **cpu_usage_threshold**: Maximum cpu usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
+  - **expected_disks_count**: Expected number of disks (ex: 2). An alert will be triggered if the number of disks doesn't match. Can be set to -1 to disable the alert.
   - **disk_space_usage_threshold**: Maximum disk space usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **disk_io_usage_threshold**: Maximum disk io usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.

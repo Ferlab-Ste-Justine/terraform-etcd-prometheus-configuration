@@ -22,6 +22,7 @@ variable "node_exporter_jobs" {
     expected_count             = number
     memory_usage_threshold     = number
     cpu_usage_threshold        = number
+    expected_disks_count       = number
     disk_space_usage_threshold = number
     disk_io_usage_threshold    = number
     alert_labels               = map(string)
