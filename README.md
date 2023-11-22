@@ -19,17 +19,19 @@ Currently, the two kinds of boilerplate that are supported:
 - **fs_path**: Path where the prometheus configuration will be generated prior to synchronizting it with etcd. Beyond generating the **prometheus.yml** file there, boilerplate rule files will be generated in the **rules** subdirectory.
 - **etcd_key_prefix**: Etcd prefix where the processed prometheus configuration will be synchronized.
 - **node_exporter_jobs**: List of node exporter jobs to generate boilerplate for. Each entry should take the following keys:
-  - **label**: Label for the node exporte job. Is should consist of words separated by dashes. The job is expected to be called `<label>-node-exporter`
+  - **tag**: Tag for the node exporte job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-node-exporter`
   - **expected_count**: Expected number of instances associated with the job
   - **memory_usage_threshold**: Maximum memory usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **cpu_usage_threshold**: Maximum cpu usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **disk_space_usage_threshold**: Maximum disk space usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **disk_io_usage_threshold**: Maximum disk io usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
+  - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 - **terracd_jobs**: List of terracd jobs to generate boilerplate for. Each entry should take the following keys:
-  - **label**: Label for the terracd job. It should correspond to the job name.
+  - **tag**: Tag for the terracd job. It should correspond to the job name.
   - **plan_interval_threshold**: Interval threshold after which an alert will be triggered if a **plan** or **apply** command did not run successfully. Used to diagnose a broken or non-running pipeline.
   - **apply_interval_threshold**: Interval threshold after which an alert will be triggered if an **apply** command did not run successfully. Used to detect a pipeline that was left in **plan** and never put back on **apply**.
   - **unit**: Base time unit to use (**minute** or **hour**) that will affect how the thresholds are interepreted and how the rules are processed (to be either in minutes or hours)
+  - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 
 # Example
 

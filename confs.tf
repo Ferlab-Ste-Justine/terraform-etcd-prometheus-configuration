@@ -1,5 +1,5 @@
 resource "local_file" "node_exporter_confs" {
-  for_each        = { for node_exporter_job in var.node_exporter_jobs : node_exporter_job.label => node_exporter_job }
+  for_each        = { for node_exporter_job in var.node_exporter_jobs : node_exporter_job.tag => node_exporter_job }
   content         = templatefile(
     "${path.module}/templates/node-exporter.yml.tpl",
     {
@@ -7,11 +7,11 @@ resource "local_file" "node_exporter_confs" {
     }
   )
   file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.label}-node-exporter.yml"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-node-exporter.yml"
 }
 
 resource "local_file" "terracd_confs" {
-  for_each        = { for terracd_job in var.terracd_jobs : terracd_job.label => terracd_job }
+  for_each        = { for terracd_job in var.terracd_jobs : terracd_job.tag => terracd_job }
   content         = templatefile(
     "${path.module}/templates/terracd.yml.tpl",
     {
@@ -19,15 +19,15 @@ resource "local_file" "terracd_confs" {
     }
   )
   file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.label}-terracd.yml"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-terracd.yml"
 }
 
 locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
     contains(keys(local.parsed_config), "rule_files") ? local.parsed_config.rule_files : [],
-    [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.label}-node-exporter.yml"],
-    [for terracd_job in var.terracd_jobs: "rules/${terracd_job.label}-terracd.yml"]
+    [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.tag}-node-exporter.yml"],
+    [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"]
   )
 }
 
