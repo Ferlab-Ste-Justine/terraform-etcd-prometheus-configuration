@@ -33,6 +33,8 @@ Currently, the two kinds of boilerplate that are supported:
   - **apply_interval_threshold**: Interval threshold after which an alert will be triggered if an **apply** command did not run successfully. Used to detect a pipeline that was left in **plan** and never put back on **apply**.
   - **unit**: Base time unit to use (**minute** or **hour**) that will affect how the thresholds are interepreted and how the rules are processed (to be either in minutes or hours)
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
+- **kubernetes_cluster_jobs**: List of kubernetes cluster jobs to generate boilerplate for. Each entry should take the following key:
+  - **tag**: Tag for the kubernetes cluster job. It should correspond to the cluster name.
 
 # Example
 

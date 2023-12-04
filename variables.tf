@@ -30,6 +30,14 @@ variable "node_exporter_jobs" {
   default = []
 }
 
+variable "kubernetes_cluster_jobs" {
+  description = "List of kubernetes cluster jobs"
+  type = list(object({
+    tag = string
+  }))
+  default = []
+}
+
 variable "config" {
   description = "Content of your prometheus main configuration file."
   type = string
