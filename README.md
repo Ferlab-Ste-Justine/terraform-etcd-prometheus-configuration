@@ -35,6 +35,12 @@ Currently, the two kinds of boilerplate that are supported:
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 - **kubernetes_cluster_jobs**: List of kubernetes cluster jobs to generate boilerplate for. Each entry should take the following key:
   - **tag**: Tag for the kubernetes cluster job. It should correspond to the cluster name.
+  - **expected_services**: List of expected deployments that should have a certain number of long running instances. Each entry should have the following keys:
+    - **namespace**: Namespace where the service is expected to run
+    - **name**: Name of the service. It should match the k8 deployment name.
+    - **expected_min_count**: Minimum expected number of instances that should be running.
+    - **expected_start_delay**: Expected delay before an instance is started. Running instances that have been around for less than that delay won't be considered running.
+    - **alert_labels**: Extra labels to add to alerts triggered for the service.
 
 # Example
 

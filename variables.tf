@@ -33,7 +33,14 @@ variable "node_exporter_jobs" {
 variable "kubernetes_cluster_jobs" {
   description = "List of kubernetes cluster jobs"
   type = list(object({
-    tag = string
+    tag               = string
+    expected_services = list(object({
+      namespace            = string
+      name                 = string
+      expected_min_count   = number
+      expected_start_delay = number
+      alert_labels         = map(string)
+    }))
   }))
   default = []
 }
