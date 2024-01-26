@@ -41,6 +41,8 @@ Currently, the two kinds of boilerplate that are supported:
     - **expected_min_count**: Minimum expected number of instances that should be running.
     - **expected_start_delay**: Expected delay before an instance is started. Running instances that have been around for less than that delay won't be considered running.
     - **alert_labels**: Extra labels to add to alerts triggered for the service.
+- **minio_cluster_jobs**: List of minio cluster jobs to generate boilerplate for. Each entry should take the following key:
+  - **tag**: Tag for the minio cluster job. It should correspond to the cluster name.
 
 # Example
 

@@ -45,6 +45,14 @@ variable "kubernetes_cluster_jobs" {
   default = []
 }
 
+variable "minio_cluster_jobs" {
+  description = "List of minio cluster jobs"
+  type = list(object({
+    tag = string
+  }))
+  default = []
+}
+
 variable "config" {
   description = "Content of your prometheus main configuration file."
   type = string
