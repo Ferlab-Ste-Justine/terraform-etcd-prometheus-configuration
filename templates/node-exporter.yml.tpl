@@ -3,7 +3,7 @@ groups:
     rules:
       #${replace(job.tag, "-", " ")} hosts count
       - record: ${replace(job.tag, "-", "_")}:up:count
-        expr: sum without(instance) (up{job="${job.tag}-node-exporter"})
+        expr: sum by (job) (up{job="${job.tag}-node-exporter"})
       - alert: Some${replace(title(replace(job.tag, "-", " ")), " ", "")}Down
         expr: ${replace(job.tag, "-", "_")}:up:count < ${job.expected_count}
         for: 15m
@@ -14,8 +14,8 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} VM(s) Down"
-          description: "Number of vm instances detected by job *{{ $labels.job }}* has dropped to *{{ $value }}*"
+          summary: "${title(replace(job.tag, "-", " "))} Machine(s) Down"
+          description: "Number of machine instances detected by job *{{ $labels.job }}* has dropped to *{{ $value }}*"
       #${replace(job.tag, "-", " ")} hosts memory metrics
       - record: ${replace(job.tag, "-", "_")}:total_memory:gigabytes
         expr: node_memory_MemTotal_bytes{job="${job.tag}-node-exporter"} / 1024 / 1024 / 1024     
@@ -32,7 +32,7 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} VM(s) High Memory Usage"
+          summary: "${title(replace(job.tag, "-", " "))} Machine(s) High Memory Usage"
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has reserved *{{ $value }}*% of available memory"
       #${replace(job.tag, "-", " ")} hosts CPU metrics
       - record: ${replace(job.tag, "-", "_")}:cpu_cores:count
@@ -49,7 +49,7 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} VM(s) High CPU Usage"
+          summary: "${title(replace(job.tag, "-", " "))} Machine(s) High CPU Usage"
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has been running on high CPU for a while. Currently at *{{ $value }}*% usage"
       #${replace(job.tag, "-", " ")} hosts filesystem metrics
       - record: ${replace(job.tag, "-", "_")}:disks:count
@@ -83,7 +83,7 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} VM(s) High Disk Space Usage"
+          summary: "${title(replace(job.tag, "-", " "))} Machine(s) High Disk Space Usage"
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has disk space usage *{{ $value }}*% for device *{{ $labels.device }}*"
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}DiskIoUsageHigh
         expr: ${replace(job.tag, "-", "_")}:disks_io_usage:percentage > ${job.disk_io_usage_threshold}
@@ -95,5 +95,5 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} VM(s) High Disk Io Usage"
+          summary: "${title(replace(job.tag, "-", " "))} Machine(s) High Disk Io Usage"
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has been running high io on device *{{ $labels.device }}* for a while. Current io at *{{ $value }}*%"
