@@ -42,7 +42,7 @@ groups:
           description: "Certificate job *${job.tag}* service has not been renewed within the expected delay of *${job.cert_renewal_window}* days before expiration. It will expire in *{{ $value }}* days."
 %{ if job.expect_recent_tls ~}
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}TlsVersionDated
-        expr: probe_tls_version_info{job="${job.tag}-blackbox-exporter", version="TLS 1.3"} OR on() vector(0) == 0
+        expr: (probe_tls_version_info{job="${job.tag}-blackbox-exporter", version="TLS 1.3"} OR on() vector(0)) == 0
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
         labels:
