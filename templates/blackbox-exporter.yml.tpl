@@ -29,7 +29,7 @@ groups:
       - record: ${replace(job.tag, "-", "_")}:cert_expiry:days
         expr: (probe_ssl_earliest_cert_expiry{job="${job.tag}-blackbox-exporter"} - time()) / (3600*24)
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}CertNotRenewed
-        expr: ${replace(job.tag, "-", "_")}:cert_expiry:days > ${job.cert_renewal_window} 
+        expr: ${replace(job.tag, "-", "_")}:cert_expiry:days < ${job.cert_renewal_window} 
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
         labels:
