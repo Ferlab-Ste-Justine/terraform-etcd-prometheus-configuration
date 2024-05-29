@@ -46,11 +46,25 @@ resource "local_file" "minio_confs" {
   filename        = "${var.fs_path}/rules/${each.value.tag}-minio.yml"
 }
 
+resource "local_file" "blackbox_exporter_confs" {
+  for_each        = { for blackbox_exporter_job in var.blackbox_exporter_jobs : blackbox_exporter_job.tag => blackbox_exporter_job }
+  content         = templatefile(
+    "${path.module}/templates/blackbox-exporter.yml.tpl",
+    {
+      job = each.value
+    }
+  )
+  file_permission = "0600"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-blackbox-exporter.yml"
+}
+
+
 locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
     contains(keys(local.parsed_config), "rule_files") ? local.parsed_config.rule_files : [],
     [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.tag}-node-exporter.yml"],
+    [for blackbox_exporter_job in var.blackbox_exporter_jobs: "rules/${blackbox_exporter_job.tag}-blackbox-exporter.yml"],
     [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"],
     [for kubernetes_cluster_job in var.kubernetes_cluster_jobs: "rules/${kubernetes_cluster_job.tag}-kubernetes.yml"],
     [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"]

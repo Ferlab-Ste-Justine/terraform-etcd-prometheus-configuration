@@ -30,6 +30,20 @@ variable "node_exporter_jobs" {
   default = []
 }
 
+variable "blackbox_exporter_jobs" {
+  description = "List of blackbox exporter jobs"
+  type = list(object({
+    tag                        = string
+    unavailability_tolerance   = string
+    max_acceptable_latency     = number
+    cert_renewal_window        = number
+    has_tls                    = bool
+    expect_recent_tls          = bool
+    alert_labels               = map(string)
+  }))
+  default = []
+}
+
 variable "kubernetes_cluster_jobs" {
   description = "List of kubernetes cluster jobs"
   type = list(object({
