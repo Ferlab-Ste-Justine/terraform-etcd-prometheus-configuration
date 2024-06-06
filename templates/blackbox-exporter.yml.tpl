@@ -59,7 +59,7 @@ groups:
             1 
             - (probe_tls_version_info{job="${job.tag}-blackbox-exporter", version="TLS 1.3"} OR on() vector(0)) 
             - on() (1 - (probe_success{job="${job.tag}-blackbox-exporter"} OR on() vector(0)))
-          ) == 0
+          ) == 1
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
         labels:
