@@ -24,7 +24,7 @@ groups:
         expr: sum by (namespace, pod, container)(kube_pod_container_info{container!="", cluster="${cluster.tag}"}) unless sum by (namespace, pod, container)(kube_pod_container_resource_limits{resource="memory"})
 %{ for service in cluster.expected_services ~}
       - record: ${replace(cluster.tag, "-", "_")}_${replace(service.name, "-", "_")}_running_pods:count
-        expr: sum by () (kube_pod_status_phase{phase="Running", pod=~"${service.name}(([-][a-z0-9]+[-][a-z0-9]+)|([-][0-9]+))", namespace="${service.namespace}", cluster="${cluster.tag}"} and on(pod, namespace, cluster) (container_start_time_seconds > ${service.expected_start_delay})) or vector(0)
+        expr: sum by () (kube_pod_status_phase{phase="Running", pod=~"${service.name}([-][a-z0-9]+([-][a-z0-9]+)?)", namespace="${service.namespace}", cluster="${cluster.tag}"} and on(pod, namespace, cluster) (container_start_time_seconds > ${service.expected_start_delay})) or vector(0)
       - alert: ${replace(title(replace(cluster.tag, "-", " ")), " ", "")}${replace(title(replace(service.name, "-", " ")), " ", "")}TooFewInstancesRunning
         expr: ${replace(cluster.tag, "-", "_")}_${replace(service.name, "-", "_")}_running_pods:count < ${service.expected_min_count}
         for: 15m
