@@ -51,6 +51,12 @@ Currently, the two kinds of boilerplate that are supported:
     - **alert_labels**: Extra labels to add to alerts triggered for the service.
 - **minio_cluster_jobs**: List of minio cluster jobs to generate boilerplate for. Each entry should take the following key:
   - **tag**: Tag for the minio cluster job. It should correspond to the cluster name.
+- **node_exporter_jobs**: List of etcd exporter jobs to generate boilerplate for. Each entry should take the following keys:
+  - **tag**: Tag for the etcd exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-etcd-exporter`
+  - **expected_count**: Expected number of etcd members associated with the job
+  - **max_learn_time**: Max expected time for an etcd learner to catchup. 
+  - **max_db_size**: Maximum expected data size (note that etcd has its own limit if 8GiB)
+  - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 
 # Example
 

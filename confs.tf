@@ -58,6 +58,17 @@ resource "local_file" "blackbox_exporter_confs" {
   filename        = "${var.fs_path}/rules/${each.value.tag}-blackbox-exporter.yml"
 }
 
+resource "local_file" "etcd_exporter_confs" {
+  for_each        = { for etcd_exporter_job in var.etcd_exporter_jobs : etcd_exporter_job.tag => etcd_exporter_job }
+  content         = templatefile(
+    "${path.module}/templates/etcd-exporter.yml.tpl",
+    {
+      job = each.value
+    }
+  )
+  file_permission = "0600"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-etcd-exporter.yml"
+}
 
 locals {
   parsed_config = yamldecode(var.config)
@@ -67,7 +78,8 @@ locals {
     [for blackbox_exporter_job in var.blackbox_exporter_jobs: "rules/${blackbox_exporter_job.tag}-blackbox-exporter.yml"],
     [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"],
     [for kubernetes_cluster_job in var.kubernetes_cluster_jobs: "rules/${kubernetes_cluster_job.tag}-kubernetes.yml"],
-    [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"]
+    [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"],
+    [for etcd_exporter_job in var.etcd_exporter_jobs: "rules/${etcd_exporter_job.tag}-etcd-exporter.yml"]
   )
 }
 

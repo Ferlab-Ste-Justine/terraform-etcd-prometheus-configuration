@@ -67,6 +67,18 @@ variable "minio_cluster_jobs" {
   default = []
 }
 
+variable "etcd_exporter_jobs" {
+  description = "List of etcd exporter jobs"
+  type = list(object({
+    tag            = string
+    members_count  = number
+    max_learn_time = string
+    max_db_size    = number
+    alert_labels   = map(string)
+  }))
+  default = []
+}
+
 variable "config" {
   description = "Content of your prometheus main configuration file."
   type = string
