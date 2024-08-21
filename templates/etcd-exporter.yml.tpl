@@ -73,7 +73,7 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Etcd Cluster Changes Leader Too Often"
           description: "Etcd cluster for job *{{ $labels.job }}* has changed leader at least once a minute for some time"
       - record: ${replace(job.tag, "-", "_")}_etcd_members:db_total_size_in_gigibytes:max
-        expr: max by (job) (etcd_mvcc_db_total_size_in_bytes{job="ops-etcd-exporter"} / 1024 / 1024 / 1024)
+        expr: max by (job) (etcd_mvcc_db_total_size_in_bytes{job="${job.tag}-etcd-exporter"} / 1024 / 1024 / 1024)
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}EtcdDbSizeTooBig
         expr: ${replace(job.tag, "-", "_")}_etcd_members:db_total_size_in_gigibytes:max > (${job.max_db_size} * 0.9)
         for: 15m
@@ -87,7 +87,7 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Etcd Cluster Db Is Getting Too Big"
           description: "Etcd cluster for job *{{ $labels.job }}* has db size of *{{ $value }}*GiB which is at least 90% of the *${job.max_db_size}*GiB maximum"
       - record: ${replace(job.tag, "-", "_")}_etcd_cluster:etcd_versions:count
-        expr: count by (job) (max by (job, server_version) (etcd_server_version{job="ops-etcd-exporter"}))
+        expr: count by (job) (max by (job, server_version) (etcd_server_version{job="${job.tag}-etcd-exporter"}))
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}EtcdInconsistentVersions
         expr: ${replace(job.tag, "-", "_")}_etcd_cluster:etcd_versions:count > 1
         for: 15m
@@ -101,4 +101,4 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Etcd Members Have Inconsistent Versions"
           description: "Etcd members for job *{{ $labels.job }}* have *{{ $value }}* different etcd versions."
       - record: ${replace(job.tag, "-", "_")}_etcd_cluster:requests:rate1m
-        expr: sum by (job) (max by (grpc_method, grpc_service, grpc_type, job) (rate(grpc_server_msg_received_total{job="ops-etcd-exporter"}[1m])))
+        expr: sum by (job) (max by (grpc_method, grpc_service, grpc_type, job) (rate(grpc_server_msg_received_total{job="${job.tag}-etcd-exporter"}[1m])))
