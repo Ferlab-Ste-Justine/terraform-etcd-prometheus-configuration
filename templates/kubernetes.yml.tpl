@@ -22,6 +22,9 @@ groups:
         expr: sum by (namespace, pod, container)(kube_pod_container_info{container!="", cluster="${cluster.tag}"}) unless sum by (namespace, pod, container)(kube_pod_container_resource_requests{resource="memory"})
       - record: ${replace(cluster.tag, "-", "_")}_kubernetes:container_missing_memory_limit:count
         expr: sum by (namespace, pod, container)(kube_pod_container_info{container!="", cluster="${cluster.tag}"}) unless sum by (namespace, pod, container)(kube_pod_container_resource_limits{resource="memory"})
+      #${replace(cluster.tag, "-", " ")} kubernetes volumes metrics
+      - record: ${replace(cluster.tag, "-", "_")}_kubernetes:volumes_usage:percentage
+        expr: 100 * sum(kubelet_volume_stats_used_bytes{cluster="${cluster.tag}"}) by (namespace, persistentvolumeclaim) / sum(kubelet_volume_stats_capacity_bytes{cluster="${cluster.tag}"}) by (namespace, persistentvolumeclaim)
 %{ for service in cluster.expected_services ~}
       - record: ${replace(cluster.tag, "-", "_")}_${replace(service.name, "-", "_")}_running_pods:count
         expr: sum by () (kube_pod_status_phase{phase="Running", pod=~"${service.name}([-][a-z0-9]+([-][a-z0-9]+)?)", namespace="${service.namespace}", cluster="${cluster.tag}"} and on(pod, namespace, cluster) (container_start_time_seconds > ${service.expected_start_delay})) or vector(0)
