@@ -67,6 +67,23 @@ groups:
         annotations:
           summary: "${title(replace(job.tag, "-", " "))} Number of Disks Unexpected"
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has *{{ $value }}* disks. Expected *${job.expected_disks_count}*."
+%{ else ~}
+%{ if job.min_disks_count >= 0 ~}
+  %{ if job.max_disks_count >= 0 }
+    - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}DiskCountRangeMismatch
+      expr: (${replace(job.tag, "-", "_")}:disks:count < ${job.min_disks_count} or ${replace(job.tag, "-", "_")}:disks:count > ${job.max_disks_count})
+      for: 15m
+%{ if length(job.alert_labels) > 0 ~}
+      labels:
+%{ for key, val in job.alert_labels ~}
+        ${key}: "${val}"
+%{ endfor ~}
+%{ endif ~}
+      annotations:
+        summary: "${title(replace(job.tag, "-", " "))} Disk Count Out of Range"
+        description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has *{{ $value }}* disks. Expected between *${job.min_disks_count}* and *${job.max_disks_count}*."
+%{ endif }
+%{ endif ~}
 %{ endif ~}
       - record: ${replace(job.tag, "-", "_")}:filesystem_size:gigabytes
         expr: node_filesystem_size_bytes{job="${job.tag}-node-exporter", fstype="ext4"} / 1024 / 1024 / 1024
