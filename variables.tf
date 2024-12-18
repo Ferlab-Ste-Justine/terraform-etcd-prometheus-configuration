@@ -79,6 +79,19 @@ variable "etcd_exporter_jobs" {
   default = []
 }
 
+variable "vault_jobs" {
+  description = "List of Vault telemetry jobs"
+  type = list(object({
+    tag                       = string
+    expected_unsealed_count   = number
+    active_request_threshold  = number
+    lease_threshold           = number
+    alert_labels              = map(string)
+  }))
+  default = []
+}
+
+
 variable "config" {
   description = "Content of your prometheus main configuration file."
   type = string
