@@ -84,8 +84,6 @@ variable "vault_exporter_jobs" {
   type = list(object({
     tag                       = string
     expected_unsealed_count   = number
-    active_request_threshold  = number
-    lease_threshold           = number
     alert_labels              = map(string)
   }))
   default = []
