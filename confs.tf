@@ -70,16 +70,16 @@ resource "local_file" "etcd_exporter_confs" {
   filename        = "${var.fs_path}/rules/${each.value.tag}-etcd-exporter.yml"
 }
 
-resource "local_file" "vault_telemetry_confs" {
-  for_each        = { for vault_job in var.vault_jobs : vault_job.tag => vault_job }
+resource "local_file" "vault_exporter_confs" {
+  for_each        = { for vault_exporter_job in var.vault_exporter_jobs : vault_exporter_job.tag => vault_exporter_job }
   content         = templatefile(
-    "${path.module}/templates/vault.yml.tpl",
+    "${path.module}/templates/vault-exporter.yml.tpl",
     {
       job = each.value
     }
   )
   file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-vault.yml"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-vault-exporter.yml"
 }
 
 locals {
@@ -92,7 +92,7 @@ locals {
     [for kubernetes_cluster_job in var.kubernetes_cluster_jobs: "rules/${kubernetes_cluster_job.tag}-kubernetes.yml"],
     [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"],
     [for etcd_exporter_job in var.etcd_exporter_jobs: "rules/${etcd_exporter_job.tag}-etcd-exporter.yml"],
-    [for vault_job in var.vault_jobs: "rules/${vault_job.tag}-vault.yml"]
+    [for vault_exporter_job in var.vault_exporter_jobs: "rules/${vault_exporter_job.tag}-vault-exporter.yml"]
 
   )
 }

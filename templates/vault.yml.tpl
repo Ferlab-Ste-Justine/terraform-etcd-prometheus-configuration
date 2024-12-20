@@ -1,9 +1,9 @@
 groups:
-  - name: ${job.tag}-vault-telemetry-metrics
+  - name: ${job.tag}-vault-exporter-metrics
     rules:
       # ${replace(job.tag, "-", " ")} Vault unsealed nodes count
       - record: ${replace(job.tag, "-", "_")}:vault_unsealed_nodes:count
-        expr: sum(vault_core_unsealed{job="${job.tag}-vault-telemetry"})
+        expr: sum(vault_core_unsealed{job="${job.tag}-vault-exporter"})
 
       # Alert if any Vault node is sealed
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}VaultNodeSealed
@@ -21,7 +21,7 @@ groups:
 
       # ${replace(job.tag, "-", " ")} Active requests
       - record: ${replace(job.tag, "-", "_")}:vault_active_requests:count
-        expr: sum(vault_core_in_flight_requests{job="${job.tag}-vault-telemetry"})
+        expr: sum(vault_core_in_flight_requests{job="${job.tag}-vault-exporter"})
 
       # Alert if active requests exceed threshold
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}VaultHighActiveRequests
@@ -39,7 +39,7 @@ groups:
 
       # ${replace(job.tag, "-", " ")} Lease metrics
       - record: ${replace(job.tag, "-", "_")}:vault_lease_count:current
-        expr: sum(vault_expire_num_leases{job="${job.tag}-vault-telemetry"})
+        expr: sum(vault_expire_num_leases{job="${job.tag}-vault-exporter"})
 
       # Alert if lease count is too low
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}VaultLowLeaseCount

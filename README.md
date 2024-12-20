@@ -57,7 +57,7 @@ Currently, the two kinds of boilerplate that are supported:
   - **max_learn_time**: Max expected time for an etcd learner to catchup. 
   - **max_db_size**: Maximum expected data size (note that etcd has its own limit if 8GiB)
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
-- **vault_telemetry_jobs**: List of Vault telemetry jobs to generate boilerplate for. Each entry should take the following keys:
+- **vault_exporter_jobs**: List of Vault telemetry jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the Vault telemetry job. It should correspond to the job name.
   - **expected_unsealed_count**: Expected number of unsealed Vault nodes in the cluster. An alert will be triggered if the number of unsealed nodes drops below this value.
   - **active_request_threshold**: Maximum allowed number of active requests. An alert will be triggered if this threshold is crossed for 10 minutes or more.

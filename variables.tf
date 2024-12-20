@@ -79,8 +79,8 @@ variable "etcd_exporter_jobs" {
   default = []
 }
 
-variable "vault_jobs" {
-  description = "List of Vault telemetry jobs"
+variable "vault_exporter_jobs" {
+  description = "List of Vault exporter jobs"
   type = list(object({
     tag                       = string
     expected_unsealed_count   = number
