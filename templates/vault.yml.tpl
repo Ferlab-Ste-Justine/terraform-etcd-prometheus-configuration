@@ -21,7 +21,7 @@ groups:
 
       # ${replace(job.tag, "-", " ")} Active requests
       - record: ${replace(job.tag, "-", "_")}:vault_active_requests:count
-        expr: sum(vault_core_in_flight_requests{job="${job.tag}-vault-exporter"})
+        expr: max by (job, cluster) (sum(vault_core_in_flight_requests{job="${job.tag}-vault-exporter"}))
 
       # Alert if active requests exceed threshold
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}VaultHighActiveRequests
@@ -39,7 +39,7 @@ groups:
 
       # ${replace(job.tag, "-", " ")} Lease metrics
       - record: ${replace(job.tag, "-", "_")}:vault_lease_count:current
-        expr: sum(vault_expire_num_leases{job="${job.tag}-vault-exporter"})
+        expr: min by (job, cluster) (sum(vault_expire_num_leases{job="${job.tag}-vault-exporter"}))
 
       # Alert if lease count is too low
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}VaultLowLeaseCount
@@ -54,3 +54,4 @@ groups:
         annotations:
           summary: "${title(replace(job.tag, "-", " "))} Vault Lease Count Low"
           description: "Lease count in Vault cluster *{{ $labels.job }}* is too low: *{{ $value }}*."
+
