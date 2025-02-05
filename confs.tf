@@ -70,6 +70,26 @@ resource "local_file" "etcd_exporter_confs" {
   filename        = "${var.fs_path}/rules/${each.value.tag}-etcd-exporter.yml"
 }
 
+resource "local_file" "patroni_exporter_confs" {
+  for_each        = { for patroni_exporter_job in var.patroni_exporter_jobs : patroni_exporter_job.tag => patroni_exporter_job }
+  content         = templatefile(
+    "${path.module}/templates/patroni-exporter.yml.tpl",
+    {
+      job = {
+        tag                     = each.value.tag
+        members_count           = each.value.members_count
+        synchronous_replication = each.value.synchronous_replication
+        max_wal_divergence      = each.value.max_wal_divergence
+        patroni_version         = join("", [for idx, val in split(".", each.value.patroni_version): length(val) == 1 && idx != 0 ? "0${val}" : val])
+        postgres_version        = join("", [for idx, val in split(".", each.value.postgres_version): length(val) == 1 && idx != 0 ? "0${val}" : val])
+        alert_labels            = each.value.alert_labels
+      }
+    }
+  )
+  file_permission = "0600"
+  filename        = "${var.fs_path}/rules/${each.value.tag}-patroni-exporter.yml"
+}
+
 resource "local_file" "vault_exporter_confs" {
   for_each        = { for vault_exporter_job in var.vault_exporter_jobs : vault_exporter_job.tag => vault_exporter_job }
   content         = templatefile(
@@ -92,8 +112,8 @@ locals {
     [for kubernetes_cluster_job in var.kubernetes_cluster_jobs: "rules/${kubernetes_cluster_job.tag}-kubernetes.yml"],
     [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"],
     [for etcd_exporter_job in var.etcd_exporter_jobs: "rules/${etcd_exporter_job.tag}-etcd-exporter.yml"],
+    [for patroni_exporter_job in var.patroni_exporter_jobs: "rules/${patroni_exporter_job.tag}-patroni-exporter.yml"],
     [for vault_exporter_job in var.vault_exporter_jobs: "rules/${vault_exporter_job.tag}-vault-exporter.yml"]
-
   )
 }
 

@@ -53,9 +53,17 @@ Currently, the two kinds of boilerplate that are supported:
   - **tag**: Tag for the minio cluster job. It should correspond to the cluster name.
 - **etcd_exporter_jobs**: List of etcd exporter jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the etcd exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-etcd-exporter`
-  - **expected_count**: Expected number of etcd members associated with the job
+  - **members_count**: Expected number of etcd members associated with the job
   - **max_learn_time**: Max expected time for an etcd learner to catchup. 
   - **max_db_size**: Maximum expected data size (note that etcd has its own limit if 8GiB)
+  - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
+- **patroni_exporter_jobs**: List of patroni exporter jobs to generate boilerplate for. Each entry should take the following keys:
+  - **tag**: Tag for the patroni exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-patroni-exporter`
+  - **members_count**: Expected number of patroni members associated with the job
+  - **synchronous_replication**: Whether the patroni cluster is set with synchronous replication or not. If true, an alert will be triggered if a sync standby node is not detected.
+  - **patroni_version**: Expected patroni version in semver notation (ex: `4.0.4`)
+  - **postgres_version**: Expected postgres version in semver notation (ex: `14.0.15`)
+  - **max_wal_divergence**: Max expected WAL divergence between the most up to date and least up to date replica in megabytes. An alert will be triggered if the WAL difference between replicas is greater than this threshold.
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 - **vault_exporter_jobs**: List of Vault telemetry jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the Vault telemetry job. It should correspond to the job name.

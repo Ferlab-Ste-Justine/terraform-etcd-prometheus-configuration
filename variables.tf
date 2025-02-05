@@ -79,6 +79,20 @@ variable "etcd_exporter_jobs" {
   default = []
 }
 
+variable "patroni_exporter_jobs" {
+  description = "List of patroni exporter jobs"
+  type = list(object({
+    tag                        = string
+    members_count              = number
+    synchronous_replication    = bool
+    patroni_version            = string
+    postgres_version           = string
+    max_wal_divergence         = number
+    alert_labels               = map(string)
+  }))
+  default = []
+}
+
 variable "vault_exporter_jobs" {
   description = "List of Vault exporter jobs"
   type = list(object({
