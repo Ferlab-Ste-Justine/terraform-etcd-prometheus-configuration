@@ -116,7 +116,7 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Patroni Version Unexpected"
           description: "Expected patroni version of instance *{{ $labels.instance }}* of job *{{ $labels.job }}* to have version *${job.patroni_version}*. It had version *{{ $value }}*"
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}PatroniPostgresVersionUnexpected
-        expr: patroni_postgres_server_version{job="${job.tag}-patroni-exporter"} != ${job.postgres_version}
+        expr: floor(patroni_postgres_server_version{job="${job.tag}-patroni-exporter"} / 10000) != ${job.postgres_major_version}
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
         labels:
@@ -125,8 +125,8 @@ groups:
 %{ endfor ~}
 %{ endif ~}
         annotations:
-          summary: "${title(replace(job.tag, "-", " "))} Patroni Postgres Version Unexpected"
-          description: "Expected postgres version of instance *{{ $labels.instance }}* of job *{{ $labels.job }}* to have version *${job.postgres_version}*. It had version *{{ $value }}*"
+          summary: "${title(replace(job.tag, "-", " "))} Patroni Postgres Major Version Unexpected"
+          description: "Expected postgres version of instance *{{ $labels.instance }}* of job *{{ $labels.job }}* to have major version *${job.postgres_major_version}*. It had version *{{ $value }}*"
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}PatroniPostgresTimelineInconsistent
         expr: min by (job) (patroni_postgres_timeline{job="${job.tag}-patroni-exporter"}) != max by (job) (patroni_postgres_timeline{job="${job.tag}-patroni-exporter"}) 
         for: 15m

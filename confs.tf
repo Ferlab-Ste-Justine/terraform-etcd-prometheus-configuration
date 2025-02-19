@@ -81,7 +81,7 @@ resource "local_file" "patroni_exporter_confs" {
         synchronous_replication = each.value.synchronous_replication
         max_wal_divergence      = each.value.max_wal_divergence
         patroni_version         = join("", [for idx, val in split(".", each.value.patroni_version): length(val) == 1 && idx != 0 ? "0${val}" : val])
-        postgres_version        = join("", [for idx, val in split(".", each.value.postgres_version): length(val) == 1 && idx != 0 ? "0${val}" : val])
+        postgres_major_version  = each.value.postgres_major_version
         alert_labels            = each.value.alert_labels
       }
     }

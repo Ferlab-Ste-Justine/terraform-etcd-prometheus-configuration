@@ -62,7 +62,7 @@ Currently, the two kinds of boilerplate that are supported:
   - **members_count**: Expected number of patroni members associated with the job
   - **synchronous_replication**: Whether the patroni cluster is set with synchronous replication or not. If true, an alert will be triggered if a sync standby node is not detected.
   - **patroni_version**: Expected patroni version in semver notation (ex: `4.0.4`)
-  - **postgres_version**: Expected postgres version in semver notation (ex: `14.0.15`)
+  - **postgres_major_version**: Expected postgres major version (ex: `14`)
   - **max_wal_divergence**: Max expected WAL divergence between the most up to date and least up to date replica in megabytes. An alert will be triggered if the WAL difference between replicas is greater than this threshold.
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
 - **vault_exporter_jobs**: List of Vault telemetry jobs to generate boilerplate for. Each entry should take the following keys:
