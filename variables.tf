@@ -86,7 +86,7 @@ variable "patroni_exporter_jobs" {
     members_count              = number
     synchronous_replication    = bool
     patroni_version            = string
-    postgres_major_version     = number
+    postgres_version           = number
     max_wal_divergence         = number
     alert_labels               = map(string)
   }))
