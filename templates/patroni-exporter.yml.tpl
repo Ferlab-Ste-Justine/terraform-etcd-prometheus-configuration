@@ -104,7 +104,7 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Patroni Streaming Count Unexpected"
           description: "Expected patroni cluster of job *{{ $labels.job }}* to have ${job.members_count - 1} members that are streaming. It had *{{ $value }}*"
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}PatroniVersionUnexpected
-%{ if patroni_full_version ~}
+%{ if job.patroni_full_version ~}
         expr: patroni_version{job="${job.tag}-patroni-exporter"} != ${job.patroni_version}
 %{ else ~}
         expr: (patroni_version{job="${job.tag}-patroni-exporter"} / 10000) != ${job.patroni_version}
@@ -120,7 +120,7 @@ groups:
           summary: "${title(replace(job.tag, "-", " "))} Patroni Version Unexpected"
           description: "Expected patroni version of instance *{{ $labels.instance }}* of job *{{ $labels.job }}* to have version *${job.patroni_version}*. It had version *{{ $value }}*"
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}PatroniPostgresVersionUnexpected
-%{ if postgres_full_version ~}
+%{ if job.postgres_full_version ~}
         expr: patroni_postgres_server_version{job="${job.tag}-patroni-exporter"} != ${job.postgres_version}
 %{ else ~}
         expr: floor(patroni_postgres_server_version{job="${job.tag}-patroni-exporter"} / 10000) != ${job.postgres_version}
