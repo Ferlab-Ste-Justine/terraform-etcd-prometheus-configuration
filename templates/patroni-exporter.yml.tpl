@@ -107,7 +107,7 @@ groups:
 %{ if job.patroni_full_version ~}
         expr: patroni_version{job="${job.tag}-patroni-exporter"} != ${job.patroni_version}
 %{ else ~}
-        expr: (patroni_version{job="${job.tag}-patroni-exporter"} / 10000) != ${job.patroni_version}
+        expr: floor(patroni_version{job="${job.tag}-patroni-exporter"} / 10000) != ${job.patroni_version}
 %{ endif ~}
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
