@@ -18,6 +18,7 @@ Currently, the two kinds of boilerplate that are supported:
 - **config**: This should be the value of the entrypoint **prometheus.yml** configuration file which will be generated from this value. The module will add some **rule_files** entries for the rule files it generates and otherwise will leave the content as is.
 - **fs_path**: Path where the prometheus configuration will be generated prior to synchronizting it with etcd. Beyond generating the **prometheus.yml** file there, boilerplate rule files will be generated in the **rules** subdirectory.
 - **etcd_key_prefix**: Etcd prefix where the processed prometheus configuration will be synchronized.
+- **prometheus_target_alert_labels**: Alert labels to set for prometheus target rules. Defaults to none.
 - **node_exporter_jobs**: List of node exporter jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the node exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-node-exporter`
   - **expected_count**: Expected number of instances associated with the job

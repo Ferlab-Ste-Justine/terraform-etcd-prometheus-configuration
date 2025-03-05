@@ -1,3 +1,14 @@
+resource "local_file" "prometheus_target_confs" {
+  content = templatefile(
+    "${path.module}/templates/prometheus-target.yml.tpl",
+    {
+      alert_labels = var.prometheus_target_alert_labels
+    }
+  )
+  file_permission = "0600"
+  filename        = "${var.fs_path}/rules/prometheus-target.yml"
+}
+
 resource "local_file" "node_exporter_confs" {
   for_each        = { for node_exporter_job in var.node_exporter_jobs : node_exporter_job.tag => node_exporter_job }
   content         = templatefile(
@@ -108,6 +119,7 @@ locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
     contains(keys(local.parsed_config), "rule_files") ? local.parsed_config.rule_files : [],
+    ["rules/prometheus-target.yml"],
     [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.tag}-node-exporter.yml"],
     [for blackbox_exporter_job in var.blackbox_exporter_jobs: "rules/${blackbox_exporter_job.tag}-blackbox-exporter.yml"],
     [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"],

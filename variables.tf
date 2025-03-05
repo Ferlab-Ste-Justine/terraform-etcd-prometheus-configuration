@@ -103,6 +103,11 @@ variable "vault_exporter_jobs" {
   default = []
 }
 
+variable "prometheus_target_alert_labels" {
+  description = "Alert labels to set for prometheus target rules"
+  type        = map(string)
+  default     = {}
+}
 
 variable "config" {
   description = "Content of your prometheus main configuration file."
