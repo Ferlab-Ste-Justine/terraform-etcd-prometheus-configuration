@@ -1,120 +1,3 @@
-resource "local_file" "prometheus_target_confs" {
-  content = templatefile(
-    "${path.module}/templates/prometheus-target.yml.tpl",
-    {
-      alert_labels = var.prometheus_target_alert_labels
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/prometheus-target.yml"
-}
-
-resource "local_file" "node_exporter_confs" {
-  for_each        = { for node_exporter_job in var.node_exporter_jobs : node_exporter_job.tag => node_exporter_job }
-  content         = templatefile(
-    "${path.module}/templates/node-exporter.yml.tpl",
-    {
-      job = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-node-exporter.yml"
-}
-
-resource "local_file" "terracd_confs" {
-  for_each        = { for terracd_job in var.terracd_jobs : terracd_job.tag => terracd_job }
-  content         = templatefile(
-    "${path.module}/templates/terracd.yml.tpl",
-    {
-      job = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-terracd.yml"
-}
-
-resource "local_file" "kubernetes_confs" {
-  for_each        = { for kubernetes_cluster_job in var.kubernetes_cluster_jobs : kubernetes_cluster_job.tag => kubernetes_cluster_job }
-  content         = templatefile(
-    "${path.module}/templates/kubernetes.yml.tpl",
-    {
-      cluster = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-kubernetes.yml"
-}
-
-resource "local_file" "minio_confs" {
-  for_each        = { for minio_cluster_job in var.minio_cluster_jobs : minio_cluster_job.tag => minio_cluster_job }
-  content         = templatefile(
-    "${path.module}/templates/minio.yml.tpl",
-    {
-      cluster = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-minio.yml"
-}
-
-resource "local_file" "blackbox_exporter_confs" {
-  for_each        = { for blackbox_exporter_job in var.blackbox_exporter_jobs : blackbox_exporter_job.tag => blackbox_exporter_job }
-  content         = templatefile(
-    "${path.module}/templates/blackbox-exporter.yml.tpl",
-    {
-      job = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-blackbox-exporter.yml"
-}
-
-resource "local_file" "etcd_exporter_confs" {
-  for_each        = { for etcd_exporter_job in var.etcd_exporter_jobs : etcd_exporter_job.tag => etcd_exporter_job }
-  content         = templatefile(
-    "${path.module}/templates/etcd-exporter.yml.tpl",
-    {
-      job = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-etcd-exporter.yml"
-}
-
-resource "local_file" "patroni_exporter_confs" {
-  for_each        = { for patroni_exporter_job in var.patroni_exporter_jobs : patroni_exporter_job.tag => patroni_exporter_job }
-  content         = templatefile(
-    "${path.module}/templates/patroni-exporter.yml.tpl",
-    {
-      job = {
-        tag                     = each.value.tag
-        members_count           = each.value.members_count
-        synchronous_replication = each.value.synchronous_replication
-        max_wal_divergence      = each.value.max_wal_divergence
-        patroni_version         = length(split(".", each.value.patroni_version)) > 1 ? join("", [for idx, val in split(".", each.value.patroni_version): length(val) == 1 && idx != 0 ? "0${val}" : val]) : each.value.patroni_version
-        patroni_full_version    = length(split(".", each.value.patroni_version)) > 1
-        postgres_version        = length(split(".", each.value.postgres_version)) > 1 ? join("", [for idx, val in split(".", each.value.postgres_version): length(val) == 1 && idx != 0 ? "0${val}" : val]) : each.value.postgres_version
-        postgres_full_version   = length(split(".", each.value.postgres_version)) > 1
-        alert_labels            = each.value.alert_labels
-      }
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-patroni-exporter.yml"
-}
-
-resource "local_file" "vault_exporter_confs" {
-  for_each        = { for vault_exporter_job in var.vault_exporter_jobs : vault_exporter_job.tag => vault_exporter_job }
-  content         = templatefile(
-    "${path.module}/templates/vault-exporter.yml.tpl",
-    {
-      job = each.value
-    }
-  )
-  file_permission = "0600"
-  filename        = "${var.fs_path}/rules/${each.value.tag}-vault-exporter.yml"
-}
-
 locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
@@ -131,21 +14,149 @@ locals {
   )
 }
 
-resource "local_file" "prometheus_conf" {
-  content         = yamlencode(merge(local.parsed_config, {rule_files=local.rule_files}))
-  file_permission = "0600"
-  filename        = "${var.fs_path}/prometheus.yml"
-}
+resource "etcd_key_prefix" "prometheus_confs" {
+  prefix = var.etcd_key_prefix
+  clear_on_deletion = true
+  
+  dynamic "keys" {
+    for_each = var.node_exporter_jobs
+    content {
+      key = "rules/${keys.value.tag}-node-exporter.yml"
+      value = templatefile(
+        "${path.module}/templates/node-exporter.yml.tpl",
+        {
+          job = keys.value
+        }
+      )
+    }
+  }
 
-resource "etcd_synchronized_directory" "prometheus_confs" {
-    directory = var.fs_path
-    key_prefix = var.etcd_key_prefix
-    source = "directory"
-    recurrence = "onchange"
+  dynamic "keys" {
+    for_each = var.terracd_jobs
+    content {
+      key = "rules/${keys.value.tag}-terracd.yml"
+      value = templatefile(
+        "${path.module}/templates/terracd.yml.tpl",
+        {
+          job = keys.value
+        }
+      )
+    }
+  }
 
-    depends_on = [
-      local_file.prometheus_conf,
-      local_file.node_exporter_confs,
-      local_file.terracd_confs
-    ]
+  dynamic "keys" {
+    for_each = var.kubernetes_cluster_jobs
+    content {
+      key = "rules/${keys.value.tag}-kubernetes.yml"
+      value = templatefile(
+        "${path.module}/templates/kubernetes.yml.tpl",
+        {
+          cluster = keys.value
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.kubernetes_cluster_jobs
+    content {
+      key = "rules/${keys.value.tag}-kubernetes.yml"
+      value = templatefile(
+        "${path.module}/templates/kubernetes.yml.tpl",
+        {
+          cluster = keys.value
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.minio_cluster_jobs
+    content {
+      key = "rules/${keys.value.tag}-minio.yml"
+      value = templatefile(
+        "${path.module}/templates/minio.yml.tpl",
+        {
+          cluster = keys.value
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.blackbox_exporter_jobs
+    content {
+      key = "rules/${keys.value.tag}-blackbox-exporter.yml"
+      value = templatefile(
+        "${path.module}/templates/blackbox-exporter.yml.tpl",
+        {
+          job = keys.value
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.etcd_exporter_jobs
+    content {
+      key = "rules/${keys.value.tag}-etcd-exporter.yml"
+      value = templatefile(
+        "${path.module}/templates/etcd-exporter.yml.tpl",
+        {
+          job = keys.value
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.patroni_exporter_jobs
+    content {
+      key = "rules/${keys.value.tag}-patroni-exporter.yml"
+      value = templatefile(
+        "${path.module}/templates/patroni-exporter.yml.tpl",
+        {
+          job = {
+            tag                     = keys.value.tag
+            members_count           = keys.value.members_count
+            synchronous_replication = keys.value.synchronous_replication
+            max_wal_divergence      = keys.value.max_wal_divergence
+            patroni_version         = length(split(".", keys.value.patroni_version)) > 1 ? join("", [for idx, val in split(".", keys.value.patroni_version): length(val) == 1 && idx != 0 ? "0${val}" : val]) : keys.value.patroni_version
+            patroni_full_version    = length(split(".", keys.value.patroni_version)) > 1
+            postgres_version        = length(split(".", keys.value.postgres_version)) > 1 ? join("", [for idx, val in split(".", keys.value.postgres_version): length(val) == 1 && idx != 0 ? "0${val}" : val]) : keys.value.postgres_version
+            postgres_full_version   = length(split(".", keys.value.postgres_version)) > 1
+            alert_labels            = keys.value.alert_labels
+          }
+        }
+      )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.vault_exporter_jobs
+    content {
+      key = "rules/${keys.value.tag}-vault-exporter.yml"
+      value = templatefile(
+        "${path.module}/templates/vault-exporter.yml.tpl",
+        {
+          job = keys.value
+        }
+      )
+    }
+  }
+
+  keys {
+    key = "rules/prometheus-target.yml"
+    value = templatefile(
+      "${path.module}/templates/prometheus-target.yml.tpl",
+      {
+        alert_labels = var.prometheus_target_alert_labels
+      }
+    )
+  }
+
+  keys {
+    key = "prometheus.yml"
+    value = yamlencode(merge(local.parsed_config, {rule_files=local.rule_files}))
+  }
 }

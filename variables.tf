@@ -114,11 +114,6 @@ variable "config" {
   type = string
 }
 
-variable "fs_path" {
-  description = "Local filesystem path where config files should be synchronized from."
-  type = string
-}
-
 variable "etcd_key_prefix" {
   description = "Etcd prefix to sync configuration files in."
   type = string
