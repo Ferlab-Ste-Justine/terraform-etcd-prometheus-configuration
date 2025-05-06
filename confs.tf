@@ -38,7 +38,17 @@ resource "etcd_key_prefix" "prometheus_confs" {
       value = templatefile(
         "${path.module}/templates/terracd.yml.tpl",
         {
-          job = keys.value
+          job = {
+            tag                      = keys.value.tag
+            run_interval_threshold   = keys.value.run_interval_threshold
+            apply_interval_threshold = keys.value.apply_interval_threshold
+            failure_time_frame       = keys.value.failure_time_frame
+            provider_use_time_frame  = keys.value.provider_use_time_frame
+            unit                     = keys.value.unit
+            time_dividor             = keys.value.unit == "minute" ? 60 : 3600
+            alert_labels             = keys.value.alert_labels
+            command_timestamp_metric = keys.value.legacy_names ? "terracd_timestamp_seconds" : "terracd_command_timestamp_seconds"
+          }
         }
       )
     }

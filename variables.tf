@@ -2,10 +2,13 @@ variable "terracd_jobs" {
   description = "List of terracd jobs"
   type = list(object({
     tag                      = string
-    plan_interval_threshold  = number
+    run_interval_threshold  = number
     apply_interval_threshold = number
+    failure_time_frame       = number
+    provider_use_time_frame  = number
     unit                     = string
     alert_labels             = map(string)
+    legacy_names             = optional(bool, false)
   }))
   default = []
 
