@@ -4,8 +4,8 @@ groups:
       #${replace(job.tag, "-", " ")} hosts count
       - record: ${replace(job.tag, "-", "_")}:up:count
         expr: sum by (job) (up{job="${job.tag}-node-exporter"})
-      - alert: Some${replace(title(replace(job.tag, "-", " ")), " ", "")}Down
-        expr: ${replace(job.tag, "-", "_")}:up:count < ${job.expected_count}
+      - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}MachineDown
+        expr: up{job="${job.tag}-node-exporter"} == 0
         for: 15m
 %{ if length(job.alert_labels) > 0 ~}
         labels:
@@ -15,7 +15,7 @@ groups:
 %{ endif ~}
         annotations:
           summary: "${title(replace(job.tag, "-", " "))} Machine(s) Down"
-          description: "Number of machine instances detected by job *{{ $labels.job }}* has dropped to *{{ $value }}*"
+          description: "Machine instance *{{ $labels.instance }}* for job *{{ $labels.job }}* is down"
       #${replace(job.tag, "-", " ")} hosts memory metrics
       - record: ${replace(job.tag, "-", "_")}:total_memory:gigabytes
         expr: node_memory_MemTotal_bytes{job="${job.tag}-node-exporter"} / 1024 / 1024 / 1024     

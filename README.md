@@ -16,7 +16,6 @@ It is meant to:
 - **prometheus_target_alert_labels**: Alert labels to set for prometheus target rules. Defaults to none.
 - **node_exporter_jobs**: List of node exporter jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the node exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-node-exporter`
-  - **expected_count**: Expected number of instances associated with the job
   - **memory_usage_threshold**: Maximum memory usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **cpu_usage_threshold**: Maximum cpu usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
   - **expected_disks_count**: Expected number of disks (ex: 2). An alert will be triggered if the number of disks doesn't match. Can be set to -1 to disable the alert.

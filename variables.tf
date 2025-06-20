@@ -22,7 +22,6 @@ variable "node_exporter_jobs" {
   description = "List of node exporter jobs"
   type = list(object({
     tag                        = string
-    expected_count             = number
     memory_usage_threshold     = number
     cpu_usage_threshold        = number
     expected_disks_count       = number

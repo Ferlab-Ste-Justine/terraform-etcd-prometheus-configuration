@@ -1,18 +1,6 @@
 groups:
   - name: prometheus-target-metrics
     rules:
-      - alert: PrometheusTargetDown
-        expr: up == 0
-        for: 15m
-%{ if length(alert_labels) > 0 ~}
-        labels:
-%{ for key, val in alert_labels ~}
-          ${key}: "${val}"
-%{ endfor ~}
-%{ endif ~}
-        annotations:
-          summary: Prometheus Target(s) Down
-          description: "Target is down for instance *{{ $labels.instance }}* of job *{{ $labels.job }}*"
       - alert: PrometheusTargetEmpty
         expr: prometheus_sd_discovered_targets == 0
         for: 15m
