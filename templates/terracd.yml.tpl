@@ -3,7 +3,7 @@ groups:
     rules:
       #${replace(job.tag, "-", " ")} elapsed time since last command
       - record: ${replace(job.tag, "-", "_")}:run_interval:${job.unit}s
-        expr: (time() - (${job.command_timestamp_metric}{job="${job.tag}"} OR on() vector(0))) / ${job.time_dividor}  
+        expr: (time() - (max(${job.command_timestamp_metric}{job="${job.tag}"}) by(job) OR on() vector(0))) / ${job.time_dividor}
       #${replace(job.tag, "-", " ")} elapsed time since last apply
       - record: ${replace(job.tag, "-", "_")}:apply_interval:${job.unit}s
         expr: (time() - (${job.command_timestamp_metric}{job="${job.tag}", command="apply"} OR on() vector(0))) / ${job.time_dividor}
