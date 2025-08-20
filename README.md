@@ -66,6 +66,11 @@ It is meant to:
   - **tag**: Tag for the Vault telemetry job. It should correspond to the job name.
   - **expected_unsealed_count**: Expected number of unsealed Vault nodes in the cluster. An alert will be triggered if the number of unsealed nodes drops below this value.
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
+- **heartbeat**: Parameters for a heartbeat alert to get a daily confirmation that alerting works end-to-end. I takes the following keys:
+  - **enabled**: Boolean flag to enable or disabled daily heartbeat alerts
+  - **hour**: Hour (0 to 23, UTC time) when the heartbeat alert should happen
+  - **minute**: Minute of the hour (0 to 59) when the heartbeat alert should happen
+  - **alert_labels**: Map of string keys and values corresponding to labels to add to the alert
   
 # Example
 

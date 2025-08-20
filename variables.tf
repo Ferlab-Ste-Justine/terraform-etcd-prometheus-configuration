@@ -105,8 +105,24 @@ variable "vault_exporter_jobs" {
   default = []
 }
 
-variable "prometheus_target_alert_labels" {
-  description = "Alert labels to set for prometheus target rules"
+variable "heartbeat" {
+  description = "Parameters for a heartbeat alert that triggers approximately around a given utc time each day and confirms alerting is still operational"
+  type = object({
+    enabled      = optional(bool, true)
+    hour         = number
+    minute       = number
+    alert_labels = map(string)
+  })
+  default = {
+    enabled      = false
+    hour         = 0
+    minute       = 0
+    alert_labels = {}
+  }
+}
+
+variable "prometheus_exporter_alert_labels" {
+  description = "Alert labels to set for prometheus exporter alerts"
   type        = map(string)
   default     = {}
 }

@@ -1,5 +1,5 @@
 groups:
-  - name: prometheus-target-metrics
+  - name: prometheus-exporter-metrics
     rules:
       - alert: PrometheusTargetEmpty
         expr: prometheus_sd_discovered_targets == 0

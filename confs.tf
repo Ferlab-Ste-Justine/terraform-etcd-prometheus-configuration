@@ -2,7 +2,7 @@ locals {
   parsed_config = yamldecode(var.config)
   rule_files = concat(
     contains(keys(local.parsed_config), "rule_files") ? local.parsed_config.rule_files : [],
-    ["rules/prometheus-target.yml"],
+    ["rules/prometheus-exporter.yml"],
     [for node_exporter_job in var.node_exporter_jobs: "rules/${node_exporter_job.tag}-node-exporter.yml"],
     [for blackbox_exporter_job in var.blackbox_exporter_jobs: "rules/${blackbox_exporter_job.tag}-blackbox-exporter.yml"],
     [for terracd_job in var.terracd_jobs: "rules/${terracd_job.tag}-terracd.yml"],
@@ -10,7 +10,8 @@ locals {
     [for minio_cluster_job in var.minio_cluster_jobs: "rules/${minio_cluster_job.tag}-minio.yml"],
     [for etcd_exporter_job in var.etcd_exporter_jobs: "rules/${etcd_exporter_job.tag}-etcd-exporter.yml"],
     [for patroni_exporter_job in var.patroni_exporter_jobs: "rules/${patroni_exporter_job.tag}-patroni-exporter.yml"],
-    [for vault_exporter_job in var.vault_exporter_jobs: "rules/${vault_exporter_job.tag}-vault-exporter.yml"]
+    [for vault_exporter_job in var.vault_exporter_jobs: "rules/${vault_exporter_job.tag}-vault-exporter.yml"],
+    var.heartbeat.enabled ? ["rules/heartbeat.yml"] : [],
   )
 }
 
@@ -155,12 +156,25 @@ resource "etcd_key_prefix" "prometheus_confs" {
     }
   }
 
+  dynamic "keys" {
+    for_each = var.heartbeat.enabled ? [var.heartbeat] : []
+    content {
+      key = "rules/heartbeat.yml"
+      value = templatefile(
+        "${path.module}/templates/heartbeat.yml.tpl",
+        {
+          heartbeat = keys.value
+        }
+      )
+    }
+  }
+
   keys {
-    key = "rules/prometheus-target.yml"
+    key = "rules/prometheus-exporter.yml"
     value = templatefile(
-      "${path.module}/templates/prometheus-target.yml.tpl",
+      "${path.module}/templates/prometheus-exporter.yml.tpl",
       {
-        alert_labels = var.prometheus_target_alert_labels
+        alert_labels = var.prometheus_exporter_alert_labels
       }
     )
   }
