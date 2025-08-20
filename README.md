@@ -13,7 +13,7 @@ It is meant to:
 
 - **config**: This should be the value of the entrypoint **prometheus.yml** configuration file which will be generated from this value. The module will add some **rule_files** entries for the rule files it generates and otherwise will leave the content as is.
 - **etcd_key_prefix**: Etcd prefix where the processed prometheus configuration will be synchronized.
-- **prometheus_target_alert_labels**: Alert labels to set for prometheus target rules. Defaults to none.
+- **prometheus_exporter_alert_labels**: Alert labels to set for prometheus exporter alerts. Defaults to none.
 - **node_exporter_jobs**: List of node exporter jobs to generate boilerplate for. Each entry should take the following keys:
   - **tag**: Tag for the node exporter job. Is should consist of words separated by dashes. The job is expected to be called `<tag>-node-exporter`
   - **memory_usage_threshold**: Maximum memory usage as a percentage (ex: 90). An alert will be triggered if this threshold is crossed for 15 minutes of more.
