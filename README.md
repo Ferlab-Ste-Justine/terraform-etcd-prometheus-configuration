@@ -35,6 +35,7 @@ It is meant to:
   - **run_interval_threshold**: Interval threshold after which an alert will be triggered if a command did not run. Used to diagnose a non-running pipeline.
   - **apply_interval_threshold**: Interval threshold after which an alert will be triggered if an **apply** command did not run. Used to detect a pipeline that was left in **plan** and never put back on **apply**.
   - **failure_time_frame**: Interval of time where a past failure result will be a candidate to cause an alert. Failing retries will keep the alert in a triggering state while putting the pipeline on hold will allow the alert to phase out (up until **run_interval_threshold** time occure since the last pipeline ran)
+  - **provider_use_time_frame**: Interval of time where the terraform providers are considered to be recently used. For this to work, the **metrics** variable in terracd must be in place with **include_providers** set to `true` and **pushgateway** configured.
   - **unit**: Base time unit to use (**minute** or **hour**) that will affect how the time units are interpreted and how the rules are processed
   - **alert_labels**: Map of string keys and values corresponding to labels to add to all the jobs' alerts.
   - **legacy_names**: Whether to use legacy metric names from terracd version **0.14.0** or earlier.
