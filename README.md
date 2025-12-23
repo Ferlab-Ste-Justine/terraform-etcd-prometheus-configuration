@@ -7,7 +7,7 @@ It is meant to:
     - https://github.com/Ferlab-Ste-Justine/terraform-openstack-prometheus-server
     - https://github.com/Ferlab-Ste-Justine/terraform-libvirt-prometheus-server
   - Make some repetitive boilerplate prometheus rules/alerts configurations more dry
-  - Be flexible enough to support unmanaged configuration outside the boilerplate that it manages
+  - Support custom rule files
 
 # Inputs
 
@@ -72,6 +72,9 @@ It is meant to:
   - **hour**: Hour (0 to 23, UTC time) when the heartbeat alert should happen
   - **minute**: Minute of the hour (0 to 59) when the heartbeat alert should happen
   - **alert_labels**: Map of string keys and values corresponding to labels to add to the alert
+- **custom_rule_files**: List of custom rule files to generate. Each entry should have the following keys:
+  - **name**: Unique name of the file
+  - **content**: File's content
   
 # Example
 

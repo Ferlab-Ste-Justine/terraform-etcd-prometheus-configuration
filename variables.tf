@@ -132,6 +132,15 @@ variable "config" {
   type = string
 }
 
+variable "custom_rule_files" {
+  description = "List of custom rule files"
+  type = list(object({
+    name = string  
+    content = string
+  }))
+  default = []
+}
+
 variable "etcd_key_prefix" {
   description = "Etcd prefix to sync configuration files in."
   type = string

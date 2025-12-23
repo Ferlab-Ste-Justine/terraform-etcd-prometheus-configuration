@@ -11,6 +11,7 @@ locals {
     [for etcd_exporter_job in var.etcd_exporter_jobs: "rules/${etcd_exporter_job.tag}-etcd-exporter.yml"],
     [for patroni_exporter_job in var.patroni_exporter_jobs: "rules/${patroni_exporter_job.tag}-patroni-exporter.yml"],
     [for vault_exporter_job in var.vault_exporter_jobs: "rules/${vault_exporter_job.tag}-vault-exporter.yml"],
+    [for custom_rule_file in var.custom_rule_files: "rules/custom/${custom_rule_file.name}"],
     var.heartbeat.enabled ? ["rules/heartbeat.yml"] : [],
   )
 }
@@ -166,6 +167,14 @@ resource "etcd_key_prefix" "prometheus_confs" {
           heartbeat = keys.value
         }
       )
+    }
+  }
+
+  dynamic "keys" {
+    for_each = var.custom_rule_files
+    content {
+      key = "rules/custom/${keys.value.name}"
+      value = keys.value.content
     }
   }
 
