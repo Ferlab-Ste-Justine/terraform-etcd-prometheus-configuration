@@ -53,7 +53,7 @@ groups:
           description: "Instance *{{ $labels.instance }}* of job *{{ $labels.job }}* has been running on high CPU for a while. Currently at *{{ $value }}*% usage"
       #${replace(job.tag, "-", " ")} hosts filesystem metrics
       - record: ${replace(job.tag, "-", "_")}:disks:count
-        expr: count without (device, major, minor, serial, path, model, revision) (node_disk_info{device=~"sd.|vd.",job="${job.tag}-node-exporter"})
+        expr: count without (device, major, minor, serial, path, model, revision, wwn) (node_disk_info{device=~"sd.|vd.",job="${job.tag}-node-exporter"})
 %{ if job.expected_disks_count >= 0 ~}
       - alert: ${replace(title(replace(job.tag, "-", " ")), " ", "")}DiskCountMismatch
         expr: ${replace(job.tag, "-", "_")}:disks:count != ${job.expected_disks_count}
